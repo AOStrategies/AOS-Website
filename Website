@@ -1,0 +1,115 @@
+Always show details
+
+Copy
+from pathlib import Path
+import zipfile
+
+# Define project structure
+project_files = {
+    "public/index.html": """<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AO Strategies</title>
+  <link href="https://fonts.googleapis.com/css2?family=Eurostar&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="root"></div>
+</body>
+</html>
+""",
+    "src/App.jsx": """import Home from './Home';
+export default function App() {
+  return <Home />;
+}
+""",
+    "src/index.js": """import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+""",
+    "src/index.css": """@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Eurostar', sans-serif;
+}
+""",
+    "tailwind.config.js": """module.exports = {
+  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  theme: {
+    extend: {
+      fontFamily: {
+        eurostar: ['Eurostar', 'sans-serif'],
+      },
+    },
+  },
+  plugins: [],
+};
+""",
+    "postcss.config.js": """module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+""",
+    "package.json": """{
+  "name": "ao-strategies-site",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "framer-motion": "^10.12.16",
+    "lucide-react": "^0.268.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
+"""
+}
+
+# Create project folder and zip it
+project_root = Path("/mnt/data/ao-strategies-site")
+project_root.mkdir(parents=True, exist_ok=True)
+
+# Write files to the appropriate locations
+for path, content in project_files.items():
+    file_path = project_root / path
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    file_path.write_text(content)
+
+# Create the zip archive
+zip_path = "/mnt/data/ao-strategies-site.zip"
+with zipfile.ZipFile(zip_path, 'w') as zipf:
+    for file_path in project_root.rglob("*"):
+        zipf.write(file_path, file_path.relative_to(project_root))
+
+zip_path
